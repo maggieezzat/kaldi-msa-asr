@@ -16,6 +16,8 @@ lang_test_dir="data/lang_test"
 dict_dir_nosp="data/local/dict_nosp"
 dict_dir="data/local/dict"
 
+lm_dir="data/local/lm/trigram"
+
 decode=false
 
 . ./path.sh
@@ -252,7 +254,7 @@ fi
 
 #################################################### NNET Training ###################################################
 if [ $stage -le 11 ]; then
-    echo "nnet training"
+    echo "$0: Starting nnet training"
     nvidia-smi -c 3
     state=$(nvidia-smi  --query | grep 'Compute Mode')
     state=($state)

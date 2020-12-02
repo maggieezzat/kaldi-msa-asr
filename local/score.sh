@@ -96,9 +96,7 @@ if [ $stage -le 0 ]; then
     fi
     ########################################################
     #TODO: Text Normalization before computing WER
-    array=( $(seq $min_lmwt $max_lmwt ) )
-    for x in "${array[@]}"; do
-        file=$dir/scoring_kaldi/penalty_$wip/$x.txt
+    for file in $dir/scoring_kaldi/penalty_$wip/*.txt; do
         sed -i 's/i/j/g' $file
         sed -i 's/I/g/g' $file
         sed -i 's/E/G/g' $file

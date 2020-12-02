@@ -135,6 +135,7 @@ elif [ -f $srcdir/init/info.txt ]; then
 fi
 
 if [ $stage -le 1 ]; then
+  echo "$0: Generating Lattice"
   $cmd $queue_opt JOB=1:$nj $dir/log/decode.JOB.log \
     nnet3-latgen-faster$thread_string $ivector_opts $frame_subsampling_opt \
      --frames-per-chunk=$frames_per_chunk \
@@ -150,6 +151,7 @@ fi
 
 
 if [ $stage -le 2 ]; then
+  echo "$0: Analyzing lats"
   if ! $skip_diagnostics ; then
     [ ! -z $iter ] && iter_opt="--iter $iter"
     steps/diagnostic/analyze_lats.sh --cmd "$cmd" $iter_opt $graphdir $dir
@@ -160,6 +162,7 @@ fi
 # The output of this script is the files "lat.*.gz"-- we'll rescore this at
 # different acoustic scales to get the final output.
 if [ $stage -le 3 ]; then
+  echo "$0: Scoring"
   if ! $skip_scoring ; then
     [ ! -x local/score.sh ] && \
       echo "Not scoring because local/score.sh does not exist or not executable." && exit 1;
