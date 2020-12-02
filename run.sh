@@ -98,7 +98,7 @@ if [ $stage -le 2 ]; then
     python local/scripts/cut_lm_vocab.py 15
     
     #create lexicon file from lm vocab + standard lexicon file (provided by Dr. Sherif) + transcripts vocab
-    python local/gen_big_lexicon.py
+    python local/scripts/gen_big_lexicon.py
 
     #copy nonsilence_phones.txt, optional_silence.txt, silence_phones.txt files to data/local/dict_nosp
     cp local/data/dict_nosp/nonsilence_phones.txt data/local/dict_nosp/
