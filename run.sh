@@ -71,7 +71,7 @@ if [ $stage -le 1 ]; then
         vad_dir="$x/vad"
         segments_dir="$x/segments"
         cmvn_dir="$x/cmvn"
-        steps/make_mfcc.sh --mfcc-config conf/mfcc.conf --nj $nj --cmd "$cmd" --write-utt2num-frames true $x $log_dir $mfcc_dir
+        steps/make_mfcc.sh --mfcc-config conf/mfcc.conf --nj $nj --cmd "$cmd" --write-utt2num-frames true $x $log_dir $mfcc_dir || exit 1;
 
         #fix data directory
         utils/fix_data_dir.sh $x 
@@ -90,26 +90,33 @@ fi
 
 #################################################### Lang directory #################################################
 if [ $stage -le 2 ]; then
-    #create lexicon file from lm vocab + standard lexicon file (provided by Dr. Sherif)
+
+    #generate language model vocab file
+    python local/scripts/gen_lm_vocab.py
+
+    #cutting on appropriate threshold and creating words list
+    python local/scripts/cut_lm_vocab.py 15
+    
+    #create lexicon file from lm vocab + standard lexicon file (provided by Dr. Sherif) + transcripts vocab
     python local/gen_big_lexicon.py
+
+    #copy nonsilence_phones.txt, optional_silence.txt, silence_phones.txt files to data/local/dict_nosp
+    cp local/data/dict_nosp/nonsilence_phones.txt data/local/dict_nosp/
+    cp local/data/dict_nosp/optional_silence.txt data/local/dict_nosp
+    cp local/data/dict_nosp/silence_phones.txt data/local/dict_nosp
+
     #create files for data/lang
     utils/prepare_lang.sh $dict_dir_nosp "<UNK>" data/local/lang $lang_dir || exit 1;
     #create files for data/lang_test
     utils/prepare_lang.sh $dict_dir_nosp "<UNK>" data/local/lang $lang_test_dir || exit 1;
 
-
-
- #create files for data/lang
-    utils/prepare_lang.sh $dict_dir_nosp "<UNK>" data/local/lang $lang_dir || exit 1;
-    #create files for data/lang_test
-    utils/prepare_lang.sh $dict_dir_nosp "<UNK>" data/local/lang $lang_test_dir || exit 1;
 fi
 #####################################################################################################################
 
 
 
 ############################################# Language Model Training ###############################################
-if [ $stage -le 1 ]; then
+if [ $stage -le 3 ]; then
     utils/train_msa_lm.sh
 fi
 #####################################################################################################################
@@ -117,7 +124,7 @@ fi
 
 
 ################################################ Monophone Training #################################################
-if [ $stage -le 2 ]; then
+if [ $stage -le 4 ]; then
     echo "Splitting data and training monophone"
     # take subset of data (30k) for monophone training
     utils/subset_data_dir.sh --shortest $train_dir 30000 $train_dir_30k || exit 1;
@@ -133,7 +140,7 @@ fi
 
 
 ############################################# First Triphone Training ###############################################
-if [ $stage -le 3 ]; then
+if [ $stage -le 5 ]; then
     echo "First triphone training"
 
     #aligning data in data/train_half using model from exp/mono, putting alignments in exp/mono_ali
@@ -147,7 +154,7 @@ fi
 
 
 ############################################# Second Triphone Training ##############################################
-if [ $stage -le 4 ]; then
+if [ $stage -le 6 ]; then
     echo "Second triphone training"
 
     #aligning data in data/train using model from exp/tri1, putting alignments in exp/tri1_ali
@@ -161,7 +168,7 @@ fi
 
 
 ############################################ LDA-MLLT Triphones Training ############################################
-if [ $stage -le 5 ]; then
+if [ $stage -le 7 ]; then
     echo "Third triphone training"
 
     #aligning data in data/train using model from exp/tri2, putting alignments in exp/tri2_ali
@@ -186,7 +193,7 @@ fi
 
 
 ############################################### SAT Triphones Training ##############################################
-if [ $stage -le 6 ]; then
+if [ $stage -le 8 ]; then
     echo "Fourth triphone training"
 
     #Align LDA-MLLT triphones with FMLLR
@@ -206,7 +213,7 @@ fi
 
 
 ############################################ LDA-MLLT Triphones Training ############################################
-if [ $stage -le 7 ]; then
+if [ $stage -le 9 ]; then
     echo "Fifth triphone training"
 
     #Align SAT triphones with FMLLR
@@ -220,7 +227,7 @@ fi
 
 
 ############################################### SAT Triphones Training ##############################################
-if [ $stage -le 8 ]; then
+if [ $stage -le 10 ]; then
     echo "Sixth triphone training"
 
     #Align LDA-MLLT triphones with FMLLR
@@ -244,7 +251,7 @@ fi
 
 
 #################################################### NNET Training ###################################################
-if [ $stage -le 9 ]; then
+if [ $stage -le 11 ]; then
     echo "nnet training"
     nvidia-smi -c 3
     state=$(nvidia-smi  --query | grep 'Compute Mode')
@@ -256,6 +263,6 @@ if [ $stage -le 9 ]; then
     else
       echo "Successfully set compute mode to Exclusive_Process"
     fi
-    CUDA_VISIBLE_DEVICES=0,1 local/nnet3/run_tdnn.sh --stage 13
+    CUDA_VISIBLE_DEVICES=0,1 local/nnet3/run_tdnn.sh
 fi
 #####################################################################################################################
