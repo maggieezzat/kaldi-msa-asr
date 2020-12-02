@@ -1,10 +1,13 @@
 import os
 import random
 import re
+import numpy as np
+
 
 #############################################################################
 #NOTE: THIS SCRIPT IS TO BE CALLED FROM THE ROOT OF THE REPO (KALDI-MSA-ASR)
 #############################################################################
+
 
 text = {}
 train_waves = []
@@ -36,19 +39,38 @@ with open('local/data/wav_msa_durations.txt', 'r') as f:
                 else:
                     out.write(line_)
             
-            
 
-#shuffle to get random 5000 wave for dev set
-random.seed(575)
-random.shuffle(train_waves)
-dev_waves = train_waves[:5000]
-train_waves = train_waves[5000:]
+#check if arrays were saved, load them
+#if not, create them
+train_npy = 'local/data/train.npy'
+test_npy = 'local/data/test.npy'
+dev_npy = 'local/data/dev.npy'
 
-#shuffle to get random 5000 wave for test set
-random.seed(575)
-random.shuffle(train_waves)
-test_waves = train_waves[:5000]
-train_waves = train_waves[5000:]
+if os.path.isfile(train_npy) and os.path.isfile(test_npy) and os.path.isfile(dev_npy):
+    print("Numpy arrays of dev, test and train exist. Loading them...")
+    # load arrays
+    train_waves = np.load('local/data/train.npy').tolist()
+    test_waves = np.load('local/data/test.npy').tolist()
+    dev_waves = np.load('local/data/dev.npy').tolist()
+
+else:
+    print("Numpy arrays of dev, test and train donot exist. Creating and saving them...")
+    #shuffle to get random 5000 wave for dev set
+    random.seed(575)
+    random.shuffle(train_waves)
+    dev_waves = train_waves[:5000]
+    np.save('local/data/dev.npy', np.asarray(dev_waves))
+    train_waves = train_waves[5000:]
+
+    #shuffle to get random 5000 wave for test set
+    random.seed(575)
+    random.shuffle(train_waves)
+    test_waves = train_waves[:5000]
+    train_waves = train_waves[5000:]
+    np.save('local/data/train.npy', np.asarray(train_waves))
+    np.save('local/data/test.npy', np.asarray(test_waves))
+
+
 
 train_dir = 'data/train'
 
