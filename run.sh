@@ -20,17 +20,26 @@ decode=false
 
 . ./path.sh
 
-####################################### Data Preparation & Feature Extraction #######################################
+################################################## Data Preparation #################################################
 if [ $stage -le 0 ]; then
-    echo "Creating necessary files and extracting features"
+    echo "$0: Creating necessary files and preparing data. this may take a long while"
+
+    #get the waves from msa dataset only
+    python local/scripts/get_msa_waves.py
+
+    #get duration of all wav files in msa data
+    ./local/scripts/get_durations.sh
 
     #create wav.scp, text and utt2spk file for each of the train, dev and test set
-    python gen_wavscp_text_utt2spk.py
+    python local/scripts/gen_wavscp_text_utt2spk.py
 
-    #create lexicon file from lm vocab + standard lexicon file (provided by Dr. Sherif)
-    python local/gen_big_lexicon.py
+    #copy the used waved to a dir on their own
+    ./local/scripts/create_used_waves_dir.sh
 
+    #add silence to the wav files (SIL begin and SIL end)
+    python local/wave_manipulator/silence_adder.py
 
+    #create utt2spk and fix data dir
     for x in $train_dir $test_dir $dev_dir; do
         #sort the files
         sort -u $x/wav.scp_tmp > $x/wav.scp
@@ -39,20 +48,30 @@ if [ $stage -le 0 ]; then
         rm $x/text_tmp
         sort -u $x/utt2spk_tmp > $x/utt2spk
         rm $x/utt2spk_tmp
-
         #make spk2utt file
         utils/utt2spk_to_spk2utt.pl $x/utt2spk > $x/spk2utt
-
         #fix data directory
         utils/fix_data_dir.sh $x
+    done
 
+fi
+#####################################################################################################################
+
+
+
+################################################## Feature Extraction ###############################################
+if [ $stage -le 1 ]; then
+
+    echo "$0: Eextracting features"
+
+    for x in $train_dir $test_dir $dev_dir; do
         #make Mel Frequency features
         log_dir="$x/log"
         mfcc_dir="$x/mfcc"
         vad_dir="$x/vad"
         segments_dir="$x/segments"
         cmvn_dir="$x/cmvn"
-        steps/make_mfcc.sh --mfcc-config conf/mfcc.conf --nj $nj --cmd "$cmd" --write-utt2num-frames true $x $log_dir $mfcc_dir || exit 1;
+        steps/make_mfcc.sh --mfcc-config conf/mfcc.conf --nj $nj --cmd "$cmd" --write-utt2num-frames true $x $log_dir $mfcc_dir
 
         #fix data directory
         utils/fix_data_dir.sh $x 
@@ -64,7 +83,23 @@ if [ $stage -le 0 ]; then
         utils/fix_data_dir.sh $x
     done
 
+fi
+#####################################################################################################################
+
+
+
+#################################################### Lang directory #################################################
+if [ $stage -le 2 ]; then
+    #create lexicon file from lm vocab + standard lexicon file (provided by Dr. Sherif)
+    python local/gen_big_lexicon.py
     #create files for data/lang
+    utils/prepare_lang.sh $dict_dir_nosp "<UNK>" data/local/lang $lang_dir || exit 1;
+    #create files for data/lang_test
+    utils/prepare_lang.sh $dict_dir_nosp "<UNK>" data/local/lang $lang_test_dir || exit 1;
+
+
+
+ #create files for data/lang
     utils/prepare_lang.sh $dict_dir_nosp "<UNK>" data/local/lang $lang_dir || exit 1;
     #create files for data/lang_test
     utils/prepare_lang.sh $dict_dir_nosp "<UNK>" data/local/lang $lang_test_dir || exit 1;

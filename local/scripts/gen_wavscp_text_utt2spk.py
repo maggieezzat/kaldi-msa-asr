@@ -2,6 +2,9 @@ import os
 import random
 import re
 
+#############################################################################
+#NOTE: THIS SCRIPT IS TO BE CALLED FROM THE ROOT OF THE REPO (KALDI-MSA-ASR)
+#############################################################################
 
 text = {}
 train_waves = []
@@ -12,12 +15,10 @@ with open('local/data/text_all', 'r') as f:
         line = line.strip().split(" ", 1)
         if len(line) > 1:
             sent = line[1]
-            #if sent.strip().startswith('SIL'):
-            #    sent = sent[3:]
-            #if sent.strip().endswith('SIL'):
-            #    sent = sent[:-3]
-            sent = sent.replace('SIL','')
-            sent = re.sub(' +', ' ', sent)
+            if not sent.strip().startswith('SIL'):
+                sent = "SIL " + sent
+            if not sent.strip().endswith('SIL'):
+                sent = sent + " SIL"
             text[line[0]] = sent.strip()
 
 
@@ -26,8 +27,8 @@ with open('local/data/wav_msa_durations.txt', 'r') as f:
         for line_ in f:
                 line = line_.strip().split()
                 id = line[0]
-                name = line[1].split("/")[-1][:-4]
-                path = line[1]
+                path = "waves/waves/"+line[1]
+                name = line[1][:-4]
                 dur = int(float(line[2]))
                 if dur <= 12:
                     train_waves.append(id)
@@ -37,12 +38,17 @@ with open('local/data/wav_msa_durations.txt', 'r') as f:
             
             
 
-#choose random 5000 waves for dev and random 5000 for test
-dev_waves = random.sample(train_waves, 5000)
-train_waves = list(list(set(train_waves)-set(dev_waves)) + list(set(dev_waves)-set(train_waves)))
+#shuffle to get random 5000 wave for dev set
+random.seed(575)
+random.shuffle(train_waves)
+dev_waves = train_waves[:5000]
+train_waves = train_waves[5000:]
 
-test_waves = random.sample(train_waves, 5000)
-train_waves = list(list(set(train_waves)-set(test_waves)) + list(set(test_waves)-set(train_waves)))
+#shuffle to get random 5000 wave for test set
+random.seed(575)
+random.shuffle(train_waves)
+test_waves = train_waves[:5000]
+train_waves = train_waves[5000:]
 
 train_dir = 'data/train'
 
