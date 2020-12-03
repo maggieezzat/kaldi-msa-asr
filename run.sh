@@ -18,7 +18,7 @@ dict_dir="data/local/dict"
 
 lm_dir="data/local/lm/trigram"
 
-decode=false
+decode_tri4=false
 
 . ./path.sh
 
@@ -205,7 +205,7 @@ if [ $stage -le 8 ]; then
     steps/train_sat_basis.sh --cmd "$cmd" 4200 40000 $train_dir $lang_dir exp/tri3_ali exp/tri4
     
     #decoding
-    if $decode; then
+    if $decode_tri4; then
         utils/mkgraph.sh $lang_test_dir exp/tri4 exp/tri4/graph
         steps/decode_basis_fmllr.sh --nj $nj --cmd "$cmd" exp/tri4/graph $dev_dir exp/tri4/decode_dev
     fi
@@ -242,11 +242,10 @@ if [ $stage -le 10 ]; then
     steps/align_basis_fmllr.sh  --nj $nj --cmd "$cmd" $train_dir $lang_dir exp/tri6 exp/tri6_ali
     
     #decoding
-    if $decode; then
-        utils/mkgraph.sh $lang_test_dir exp/tri6 exp/tri6/graph || exit 1;
-        steps/decode_basis_fmllr.sh --nj $nj --cmd "$cmd" exp/tri6/graph $dev_dir exp/tri6/decode_dev
-        steps/decode_basis_fmllr.sh --nj $nj --cmd "$cmd" exp/tri6/graph $test_dir exp/tri6/decode_test
-    fi
+    utils/mkgraph.sh $lang_test_dir exp/tri6 exp/tri6/graph || exit 1;
+    steps/decode_basis_fmllr.sh --nj $nj --cmd "$cmd" exp/tri6/graph $dev_dir exp/tri6/decode_dev
+    steps/decode_basis_fmllr.sh --nj $nj --cmd "$cmd" exp/tri6/graph $test_dir exp/tri6/decode_test
+
 fi
 #####################################################################################################################
 

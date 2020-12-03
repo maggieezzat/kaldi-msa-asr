@@ -10,6 +10,8 @@ srilm_dir="../../tools/srilm/bin/i686-m64"
 lang_test_dir="data/lang_test"
 dict_dir_nosp="data/local/dict_nosp"
 
+mkdir -p $tri_dir
+mkdir -p $fourth_dir
 
 ################################################# Data Preparation ##################################################
 #append train transcripts to lm train data and generate words list
@@ -26,7 +28,7 @@ echo "$0: Training trigram language model"
 $srilm_dir/ngram-count -text $lm_text -order 3 -limit-vocab -vocab $lm_vocab -unk -map-unk "<UNK>" -kndiscount -interpolate -lm $tri_dir/tri_lm.o3g.kn.gz -gt2min 3 -gt3min 2
 
 #measure perplexity
-echo "$0: Perplexity for trigram language model"
+echo "$0: Measuring perplexity for trigram language model"
 $srilm_dir/ngram -unk -lm $tri_dir/tri_lm.o3g.kn.gz -ppl $lm_test -debug 0 >& $tri_dir/tri_lm.ppl0
 #file data/language_model/test_lm_ASMO_118k_words.txt: 7857 sentences, 118250 words, 577 OOVs
 #0 zeroprobs, logprob= -273972.6 ppl= 152.2393 ppl1= 212.9382
