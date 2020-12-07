@@ -28,8 +28,8 @@ nj=30
 #############################################
 #train_set="train"
 #test_sets="dev test"
-train_set="dev"
-test_sets="test"
+train_set="dev-nn"
+test_sets="test-nn"
 #############################################
 
 gmm=tri6      # this is the source gmm-dir that we'll use for alignments; it
