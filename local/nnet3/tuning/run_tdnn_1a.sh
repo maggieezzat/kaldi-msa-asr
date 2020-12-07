@@ -26,11 +26,11 @@ stage=0
 nj=30
 
 #############################################
-#train_set="train"
-#test_sets="dev test"
-train_set="dev-nn"
-#test_sets="test-nn"
-test_sets="tts_data-nn"
+train_set="train"
+test_sets="dev"
+
+#train_set="dev-nn"
+#test_sets="tts_data-nn"
 #############################################
 
 gmm=tri6      # this is the source gmm-dir that we'll use for alignments; it
@@ -38,7 +38,8 @@ gmm=tri6      # this is the source gmm-dir that we'll use for alignments; it
 num_threads_ubm=32
 
 #############################################
-nnet3_affix=_tdnn_dev
+#nnet3_affix=_tdnn_dev
+nnet3_affix=tdnn_train
 #nnet3_affix=tdnn       # affix for exp dirs, e.g. it was _cleaned in tedlium.
 #############################################
 
@@ -133,7 +134,7 @@ if [ $stage -le 13 ]; then
     --trainer.num-epochs=3 \
     --trainer.samples-per-iter=400000 \
     --trainer.optimization.num-jobs-initial=2 \
-    --trainer.optimization.num-jobs-final=3 \
+    --trainer.optimization.num-jobs-final=10 \
     --trainer.optimization.initial-effective-lrate=0.0015 \
     --trainer.optimization.final-effective-lrate=0.00015 \
     --trainer.optimization.minibatch-size=256,128 \
