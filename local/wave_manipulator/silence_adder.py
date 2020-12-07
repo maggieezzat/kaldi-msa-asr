@@ -9,7 +9,7 @@ import sys
 #############################################################################
 
 
-output_path = "waves/waves"
+output_path = "waves/waves_with_sil"
 
 if not os.path.exists(output_path):
     os.makedirs(output_path)
@@ -29,8 +29,12 @@ for dataset in datasets:
             files.append("waves/used_waves/" + f_name + '.wav')
 '''
 
+total = len(files)
+i=0
 
 for _file in files:
+    i+=1
+    print("File: " + str(i) + "/"+str(total))
     try:
         dummy = wm(_file)
         dummy.add_silence_beginning_and_end(400, 400)
