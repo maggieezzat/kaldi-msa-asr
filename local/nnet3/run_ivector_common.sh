@@ -13,7 +13,8 @@ nj=30
 #train_set="train"
 #test_sets="dev test"
 train_set="dev-nn"
-test_sets="test-nn"
+#test_sets="test-nn"
+test_sets="tts_data-nn"
 
 ########################################################
 gmm=tri6                # This specifies a GMM-dir from the features of the type you're training the system on;
