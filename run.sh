@@ -56,12 +56,9 @@ if [ $stage -le 0 ]; then
     #create utt2spk and fix data dir
     for x in $train_dir $test_dir $dev_dir; do
         #sort the files
-        sort -u $x/wav.scp_tmp > $x/wav.scp
-        rm $x/wav.scp_tmp
-        sort -u $x/text_tmp > $x/text
-        rm $x/text_tmp
-        sort -u $x/utt2spk_tmp > $x/utt2spk
-        rm $x/utt2spk_tmp
+        sort -u -o $x/wav.scp $x/wav.scp
+        sort -u -o $x/text $x/text
+        sort -u -o $x/utt2spk $x/utt2spk
         #make spk2utt file
         utils/utt2spk_to_spk2utt.pl $x/utt2spk > $x/spk2utt
         #fix data directory

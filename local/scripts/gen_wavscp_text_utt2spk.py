@@ -77,9 +77,9 @@ train_dir = 'data/train'
 if not os.path.exists(train_dir):
     os.makedirs(train_dir)
 
-with open(train_dir+'/wav.scp_tmp', 'w') as wavscp:
-    with open(train_dir+'/text_tmp', 'w') as text_out:
-        with open(train_dir+'/utt2spk_tmp', 'w') as utt2spk:
+with open(train_dir+'/wav.scp', 'w') as wavscp:
+    with open(train_dir+'/text', 'w') as text_out:
+        with open(train_dir+'/utt2spk', 'w') as utt2spk:
             for wave_id in train_waves:
                 name = waves_dict[wave_id][0]
                 path = waves_dict[wave_id][1]
@@ -92,9 +92,9 @@ test_dir = 'data/test'
 if not os.path.exists(test_dir):
     os.makedirs(test_dir)
 
-with open(test_dir+'/wav.scp_tmp', 'w') as wavscp:
-    with open(test_dir+'/text_tmp', 'w') as text_out:
-        with open(test_dir+'/utt2spk_tmp', 'w') as utt2spk:
+with open(test_dir+'/wav.scp', 'w') as wavscp:
+    with open(test_dir+'/text', 'w') as text_out:
+        with open(test_dir+'/utt2spk', 'w') as utt2spk:
             for wave_id in test_waves:
                 name = waves_dict[wave_id][0]
                 path = waves_dict[wave_id][1]
@@ -108,9 +108,9 @@ dev_dir = 'data/dev'
 if not os.path.exists(dev_dir):
     os.makedirs(dev_dir)
 
-with open(dev_dir+'/wav.scp_tmp', 'w') as wavscp:
-    with open(dev_dir+'/text_tmp', 'w') as text_out:
-        with open(dev_dir+'/utt2spk_tmp', 'w') as utt2spk:
+with open(dev_dir+'/wav.scp', 'w') as wavscp:
+    with open(dev_dir+'/text', 'w') as text_out:
+        with open(dev_dir+'/utt2spk', 'w') as utt2spk:
             for wave_id in dev_waves:
                 name = waves_dict[wave_id][0]
                 path = waves_dict[wave_id][1]
