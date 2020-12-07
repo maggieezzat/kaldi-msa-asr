@@ -4,19 +4,31 @@ stage=0
 
 cmd="run.pl"
 nj=$(grep -c ^processor /proc/cpuinfo)
-
 train_dir="data/train"
 train_dir_half="data/train_half"
 train_dir_30k="data/train_30k"
 test_dir="data/test"
 dev_dir="data/dev"
 
+#####################################################################
+#NOTE: big-lex, small-lex and big-lm, small-lm are there for development purposes and shall be removed in the end
 lang_dir="data/lang"
 lang_test_dir="data/lang_test"
+
+#lang_dir="data/lang_big_lex"
+#lang_test_dir="data/lang_test_big_lex"
+
+
 dict_dir_nosp="data/local/dict_nosp"
 dict_dir="data/local/dict"
 
-lm_dir="data/local/lm/trigram"
+#dict_dir_nosp="data/local/dict_nosp_big_lex"
+#dict_dir="data/local/dict_big_lex"
+
+
+lm_dir="data/local/lm/small-lm-trigram"
+#lm_dir="data/local/lm/big-lm-trigram"
+#######################################################################
 
 decode_tri4=false
 

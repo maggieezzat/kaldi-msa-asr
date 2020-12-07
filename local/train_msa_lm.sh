@@ -1,17 +1,27 @@
 #!/usr/bin/env bash
 
-lm_text="data/local/lm/lm_train__msa_plus_transcipts.txt"
-lm_vocab="data/local/lm/lm_train__words_list.txt"
-lm_test="data/local/lm/lm_test__msa_corpus_clean_ASMO.txt"
-tri_dir="data/local/lm/trigram"
-fourth_dir="data/local/lm/4-gram"
 srilm_dir="../../tools/srilm/bin/i686-m64"
+
+#####################################################################
+#NOTE: big-lex, small-lex and big-lm, small-lm are there for development purposes and shall be removed in the end
+
+#lm_text="data/local/lm/big-lm-data/lm_train__msa_plus_transcipts.txt"
+#lm_vocab="data/local/lm/big-lm-data/lm_train__words_list.txt"
+#lm_test="data/local/lm/big-lm-data/lm_test__msa_corpus_clean_ASMO.txt"
+#tri_dir="data/local/lm/big-lm-trigram"
+
+lm_text="data/local/lm/small-lm-data/2-5_lm_corpus_FULL.txt"
+lm_vocab="data/local/lm/small-lm-data/2-5_lm_vocab_FULL.txt"
+lm_test="data/local/lm/small-lm-data/test_lm_ASMO_118k_words.txt"
+tri_dir="data/local/lm/small-lm-trigram"
 
 lang_test_dir="data/lang_test"
 dict_dir_nosp="data/local/dict_nosp"
+#####################################################################
+
+
 
 mkdir -p $tri_dir
-mkdir -p $fourth_dir
 
 ################################################# Data Preparation ##################################################
 #append train transcripts to lm train data and generate words list

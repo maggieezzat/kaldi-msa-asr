@@ -7,6 +7,8 @@ import os
 if not os.path.exists('data/local/dict_nosp'):
     os.makedirs('data/local/dict_nosp')
 
+#lm_words_list = 'data/local/lm/lm_train__words_list.txt'
+lm_words_list = 'data/local/lm/small-lm-data/2-5_lm_vocab_FULL.txt'
 
 all_vocab = {}
 
@@ -29,7 +31,7 @@ with open('data/local/dict_nosp/lexicon.txt', 'w') as out:
                         out_p.write(word + "    1.0    " + lex_ + '\n')
                         all_vocab[word] = word
         
-        with open('data/local/lm/lm_train__words_list.txt', 'r') as f:
+        with open(lm_words_list, 'r') as f:
             print("Processing lm words list..")
             i = 0
             for line in f:
