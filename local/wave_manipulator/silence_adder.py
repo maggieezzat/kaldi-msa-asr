@@ -14,6 +14,11 @@ output_path = "waves/waves"
 if not os.path.exists(output_path):
     os.makedirs(output_path)
 
+input_path = "waves/used_waves/"
+    
+files = glob.glob(os.path.join(input_path, "*.wav"))
+
+'''
 datasets = ['train', 'dev', 'test']
 files = []
 
@@ -22,6 +27,7 @@ for dataset in datasets:
         for line in f:
             f_name = line.strip().split()[0]
             files.append("waves/used_waves/" + f_name + '.wav')
+'''
 
 
 for _file in files:
