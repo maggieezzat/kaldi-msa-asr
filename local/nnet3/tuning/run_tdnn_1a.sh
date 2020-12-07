@@ -25,12 +25,22 @@ set -e -o pipefail -u
 stage=0
 nj=30
 
-train_set="train"
-test_sets="dev test"
+#############################################
+#train_set="train"
+#test_sets="dev test"
+train_set="dev"
+test_sets="test"
+#############################################
+
 gmm=tri6      # this is the source gmm-dir that we'll use for alignments; it
               # should have alignments for the specified training data.
 num_threads_ubm=32
-nnet3_affix=tdnn       # affix for exp dirs, e.g. it was _cleaned in tedlium.
+
+#############################################
+nnet3_affix=_tdnn_dev
+#nnet3_affix=tdnn       # affix for exp dirs, e.g. it was _cleaned in tedlium.
+#############################################
+
 tdnn_affix=1a  #affix for TDNN directory e.g. "1a" or "1b", in case we change the configuration.
 
 # Options which are not passed through to run_ivector_common.sh
