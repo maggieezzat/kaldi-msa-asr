@@ -34,7 +34,7 @@ i=0
 
 for _file in files:
     i+=1
-    print("File: " + str(i) + "/"+str(total))
+    print("File: " + str(i) + "/"+str(total), end='\r')
     try:
         dummy = wm(_file)
         dummy.add_silence_beginning_and_end(400, 400)
