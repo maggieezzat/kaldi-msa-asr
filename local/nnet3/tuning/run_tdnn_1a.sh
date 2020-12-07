@@ -118,7 +118,7 @@ if [ $stage -le 13 ]; then
     --trainer.srand=$srand \
     --trainer.max-param-change=2.0 \
     --trainer.num-epochs=3 \
-    --trainer.samples-per-iter=200000 \
+    --trainer.samples-per-iter=400000 \
     --trainer.optimization.num-jobs-initial=2 \
     --trainer.optimization.num-jobs-final=10 \
     --trainer.optimization.initial-effective-lrate=0.0015 \
@@ -126,7 +126,7 @@ if [ $stage -le 13 ]; then
     --trainer.optimization.minibatch-size=256,128 \
     --egs.dir="$common_egs_dir" \
     --cleanup.remove-egs=$remove_egs \
-    --use-gpu=true \
+    --use-gpu=wait \
     --feat-dir=$train_data_dir \
     --ali-dir=$ali_dir \
     --lang=data/lang \
