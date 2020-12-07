@@ -121,6 +121,8 @@ if [ $stage -le 13 ]; then
      /export/b0{3,4,5,6}/$USER/kaldi-data/egs/tedlium-$(date +'%m_%d_%H_%M')/s5_r2/$dir/egs/storage $dir/egs/storage
   fi
 
+####################################################
+#NOTE: UPDATES NUM JOBS FINAL (WAS 10) TO TRAIN ON DEV SET
   steps/nnet3/train_dnn.py --stage=$train_stage \
     --cmd="$cmd" \
     --feat.online-ivector-dir=$train_ivector_dir \
@@ -130,7 +132,7 @@ if [ $stage -le 13 ]; then
     --trainer.num-epochs=3 \
     --trainer.samples-per-iter=400000 \
     --trainer.optimization.num-jobs-initial=2 \
-    --trainer.optimization.num-jobs-final=10 \
+    --trainer.optimization.num-jobs-final=3 \
     --trainer.optimization.initial-effective-lrate=0.0015 \
     --trainer.optimization.final-effective-lrate=0.00015 \
     --trainer.optimization.minibatch-size=256,128 \
