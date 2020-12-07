@@ -10,6 +10,10 @@ srilm_dir="../../tools/srilm/bin/i686-m64"
 #lm_test="data/local/lm/big-lm-data/lm_test__msa_corpus_clean_ASMO.txt"
 #tri_dir="data/local/lm/big-lm-trigram"
 
+#lang_test_dir="data/lang_test_big_lex"
+#dict_dir_nosp="data/local/dict_nosp_big_lex"
+
+
 lm_text="data/local/lm/small-lm-data/2-5_lm_corpus_FULL.txt"
 lm_vocab="data/local/lm/small-lm-data/2-5_lm_vocab_FULL.txt"
 lm_test="data/local/lm/small-lm-data/test_lm_ASMO_118k_words.txt"
