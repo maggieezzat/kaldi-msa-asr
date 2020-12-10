@@ -11,7 +11,7 @@ stage=0
 nj=30
 ########################################################
 train_set="train"
-test_sets="dev"
+test_sets="dev test"
 ########################################################
 
 gmm=tri6                # This specifies a GMM-dir from the features of the type you're training the system on;
