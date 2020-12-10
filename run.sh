@@ -33,6 +33,7 @@ lm_dir="data/local/lm/small-lm-trigram"
 decode_tri4=false
 
 . ./path.sh
+. ./utils/parse_options.sh
 
 ################################################## Data Preparation #################################################
 if [ $stage -le 0 ]; then
@@ -140,6 +141,8 @@ if [ $stage -le 4 ]; then
     # take subset of data (30k) for monophone training
     utils/subset_data_dir.sh --shortest $train_dir 30000 $train_dir_30k || exit 1;
 
+    ################TODO:
+    #remove --first
     # take subset of data ( about half) for monophone alignment and first triphone training
     utils/subset_data_dir.sh --first $train_dir 40000 $train_dir_half || exit 1;
 

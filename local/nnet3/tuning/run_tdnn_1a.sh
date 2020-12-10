@@ -25,21 +25,15 @@ set -e -o pipefail -u
 stage=0
 nj=30
 
-#############################################
 train_set="train"
 test_sets="dev"
-
-#train_set="dev-nn"
-#test_sets="tts_data-nn"
-#############################################
 
 gmm=tri6      # this is the source gmm-dir that we'll use for alignments; it
               # should have alignments for the specified training data.
 num_threads_ubm=32
 
 #############################################
-#nnet3_affix=_tdnn_dev
-nnet3_affix=tdnn_train
+nnet3_affix=_tdnn_train
 #nnet3_affix=tdnn       # affix for exp dirs, e.g. it was _cleaned in tedlium.
 #############################################
 
@@ -131,7 +125,7 @@ if [ $stage -le 13 ]; then
     --feat.cmvn-opts="--norm-means=false --norm-vars=false" \
     --trainer.srand=$srand \
     --trainer.max-param-change=2.0 \
-    --trainer.num-epochs=3 \
+    --trainer.num-epochs=5 \
     --trainer.samples-per-iter=400000 \
     --trainer.optimization.num-jobs-initial=2 \
     --trainer.optimization.num-jobs-final=10 \
@@ -157,10 +151,10 @@ if [ $stage -le 14 ]; then
   for data in $test_sets; do
     (
       data_affix=$(echo $data | sed s/test_//)
-      nj=$(wc -l <data/${data}_hires/spk2utt)
-
+      #nj=$(wc -l <data/${data}_hires/spk2utt)
+      nj=12
       graph_dir=$gmm_dir/graph
-      steps/nnet3/decode.sh --nj $nj --cmd "$cmd"  --num-threads 12 --use-gpu true \
+      steps/nnet3/decode.sh --nj $nj --cmd "$cmd"  --num-threads 12 \
            --online-ivector-dir exp/nnet3${nnet3_affix}/ivectors_${data}_hires \
           ${graph_dir} data/${data}_hires ${dir}/decode_${data_affix} || exit 1
 

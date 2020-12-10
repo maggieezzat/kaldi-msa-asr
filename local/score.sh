@@ -63,11 +63,12 @@ mkdir -p $dir/scoring_kaldi
 cat $data/text | $ref_filtering_cmd > $dir/scoring_kaldi/test_filt.txt || exit 1;
 ########################################################
 #TODO: normalize test_filt.txt
-sed -i 's/i/j/g' $dir/scoring_kaldi/test_filt.txt
-sed -i 's/I/g/g' $dir/scoring_kaldi/test_filt.txt
-sed -i 's/E/G/g' $dir/scoring_kaldi/test_filt.txt
-sed -i 's/C/G/g' $dir/scoring_kaldi/test_filt.txt
-sed -i 's/B/G/g' $dir/scoring_kaldi/test_filt.txt
+#sed -i 's/i/j/g' $dir/scoring_kaldi/test_filt.txt
+#sed -i 's/I/g/g' $dir/scoring_kaldi/test_filt.txt
+#sed -i 's/E/G/g' $dir/scoring_kaldi/test_filt.txt
+#sed -i 's/C/G/g' $dir/scoring_kaldi/test_filt.txt
+#sed -i 's/B/G/g' $dir/scoring_kaldi/test_filt.txt
+python3 local/scripts/normalize.py $dir/scoring_kaldi/test_filt.txt
 ########################################################
 
 if [ $stage -le 0 ]; then
@@ -97,11 +98,12 @@ if [ $stage -le 0 ]; then
     ########################################################
     #TODO: Text Normalization before computing WER
     for file in $dir/scoring_kaldi/penalty_$wip/*.txt; do
-        sed -i 's/i/j/g' $file
-        sed -i 's/I/g/g' $file
-        sed -i 's/E/G/g' $file
-        sed -i 's/C/G/g' $file
-        sed -i 's/B/G/g' $file
+        #sed -i 's/i/j/g' $file
+        #sed -i 's/I/g/g' $file
+        #sed -i 's/E/G/g' $file
+        #sed -i 's/C/G/g' $file
+        #sed -i 's/B/G/g' $file
+        python3 local/scripts/normalize.py $file
     done
     ########################################################
 
