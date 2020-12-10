@@ -18,7 +18,8 @@ with open('local/data/text_all', 'r') as f:
         line = line.strip().split(" ", 1)
         if len(line) > 1:
             sent = line[1]
-            sent = re.sub(" SIL", "", sent)
+            sent = re.sub("SIL", "", sent)
+            sent = re.sub(' +', ' ', sent) 
             text[line[0]] = sent.strip()
 
 
