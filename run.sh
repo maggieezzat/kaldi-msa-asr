@@ -249,9 +249,6 @@ if [ $stage -le 10 ]; then
     
     #Train SAT triphones
     steps/train_sat_basis.sh --cmd "$cmd" 7000 100000 $train_dir $lang_dir exp/tri5_ali exp/tri6
-
-    #Align SAT triphones with FMLLR
-    steps/align_basis_fmllr.sh  --nj $nj --cmd "$cmd" $train_dir $lang_dir exp/tri6 exp/tri6_ali
     
     #decoding
     utils/mkgraph.sh $lang_test_dir exp/tri6 exp/tri6/graph || exit 1;
@@ -263,8 +260,48 @@ fi
 
 
 
-#################################################### NNET Training ###################################################
+
+############################################ LDA-MLLT Triphones Training ############################################
 if [ $stage -le 11 ]; then
+    echo "Seventh triphone training"
+
+    #Align SAT triphones with FMLLR
+    steps/align_basis_fmllr.sh  --nj $nj --cmd "$cmd" $train_dir $lang_dir exp/tri6 exp/tri6_ali
+
+    #train third pass of LDA-MLLT
+    steps/train_lda_mllt.sh --cmd "$cmd" 8500 140000 $train_dir $lang_dir exp/tri6_ali exp/tri7
+fi
+#####################################################################################################################
+
+
+
+############################################### SAT Triphones Training ##############################################
+if [ $stage -le 12 ]; then
+    echo "Eighth triphone training"
+
+    #Align LDA-MLLT triphones with FMLLR
+    steps/align_fmllr.sh --nj $nj --cmd "$cmd" $train_dir $lang_dir exp/tri7 exp/tri7_ali
+    
+    #Train SAT triphones
+    steps/train_sat_basis.sh --cmd "$cmd" 10000 180000 $train_dir $lang_dir exp/tri7_ali exp/tri8
+
+    #Align SAT triphones with FMLLR
+    steps/align_basis_fmllr.sh  --nj $nj --cmd "$cmd" $train_dir $lang_dir exp/tri8 exp/tri8_ali
+    
+    #decoding
+    utils/mkgraph.sh $lang_test_dir exp/tri8 exp/tri8/graph || exit 1;
+    steps/decode_basis_fmllr.sh --nj $nj --cmd "$cmd" exp/tri8/graph $dev_dir exp/tri8/decode_dev
+    steps/decode_basis_fmllr.sh --nj $nj --cmd "$cmd" exp/tri8/graph $test_dir exp/tri8/decode_test
+
+fi
+#####################################################################################################################
+
+
+
+
+
+#################################################### NNET Training ###################################################
+if [ $stage -le 13 ]; then
     echo "$0: Starting nnet training"
     nvidia-smi -c 3
     state=$(nvidia-smi  --query | grep 'Compute Mode')
