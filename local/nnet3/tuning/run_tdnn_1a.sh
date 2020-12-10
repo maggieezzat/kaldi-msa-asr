@@ -117,8 +117,7 @@ if [ $stage -le 13 ]; then
      /export/b0{3,4,5,6}/$USER/kaldi-data/egs/tedlium-$(date +'%m_%d_%H_%M')/s5_r2/$dir/egs/storage $dir/egs/storage
   fi
 
-####################################################
-#NOTE: UPDATES NUM JOBS FINAL (WAS 10) TO TRAIN ON DEV SET
+
   steps/nnet3/train_dnn.py --stage=$train_stage \
     --cmd="$cmd" \
     --feat.online-ivector-dir=$train_ivector_dir \

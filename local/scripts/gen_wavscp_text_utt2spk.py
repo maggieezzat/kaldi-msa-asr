@@ -18,10 +18,7 @@ with open('local/data/text_all', 'r') as f:
         line = line.strip().split(" ", 1)
         if len(line) > 1:
             sent = line[1]
-            if not sent.strip().startswith('SIL'):
-                sent = "SIL " + sent
-            if not sent.strip().endswith('SIL'):
-                sent = sent + " SIL"
+            sent = re.sub(" SIL", "", sent)
             text[line[0]] = sent.strip()
 
 
