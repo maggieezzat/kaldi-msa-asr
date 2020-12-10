@@ -273,6 +273,6 @@ if [ $stage -le 11 ]; then
     else
       echo "Successfully set compute mode to Exclusive_Process"
     fi
-    CUDA_VISIBLE_DEVICES=0,1 local/nnet3/run_tdnn.sh --stage 10
+    CUDA_VISIBLE_DEVICES=0,1 local/nnet3/run_tdnn.sh
 fi
 #####################################################################################################################
