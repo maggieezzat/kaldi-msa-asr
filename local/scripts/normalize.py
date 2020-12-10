@@ -4,10 +4,8 @@ def normalize(input_file):
     output_string = ""
     with open(input_file, 'r') as f:
         for line in f:
-            #print(line)
             for i, word in enumerate(line.split()):
                 if (i == 0):
-                    print(word)
                     output_string += word
                 else:
                     output_string += " " + word.replace("i", "j").replace("I", "g").replace("E", "G").replace("C", "B").replace("B", "G")
@@ -22,5 +20,4 @@ def normalize(input_file):
 
 if __name__ == "__main__":
     input_file = sys.argv[1]
-    #output_file = sys.argv[2]
     normalize(input_file)
