@@ -54,14 +54,14 @@ set -e -o pipefail
 stage=0
 nj=30
 train_set="train"
-test_sets="dev"
+test_sets="dev test"
 gmm=tri8        # this is the source gmm-dir that we'll use for alignments; it
                  # should have alignments for the specified training data.
 num_threads_ubm=32
 nnet3_affix=_tdnn_lstm_train       # affix for exp dirs, e.g. it was _cleaned in tedlium.
 
 # Options which are not passed through to run_ivector_common.sh
-affix=1a  #affix for TDNN+LSTM directory e.g. "1a" or "1b", in case we change the configuration.
+affix=1b  #affix for TDNN+LSTM directory e.g. "1a" or "1b", in case we change the configuration.
 common_egs_dir=
 reporting_email=
 
@@ -163,7 +163,7 @@ if [ $stage -le 13 ]; then
     --feat.cmvn-opts="--norm-means=false --norm-vars=false" \
     --trainer.srand=$srand \
     --trainer.max-param-change=2.0 \
-    --trainer.num-epochs=6 \
+    --trainer.num-epochs=10 \
     --trainer.deriv-truncate-margin=10 \
     --trainer.samples-per-iter=20000 \
     --trainer.optimization.num-jobs-initial=3 \
