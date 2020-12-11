@@ -53,12 +53,12 @@ set -e -o pipefail
 # (some of which are also used in this script directly).
 stage=0
 nj=30
-train_set=train_si284
-test_sets="test_dev93 test_eval92"
-gmm=tri4b        # this is the source gmm-dir that we'll use for alignments; it
+train_set="train"
+test_sets="dev"
+gmm=tri8        # this is the source gmm-dir that we'll use for alignments; it
                  # should have alignments for the specified training data.
 num_threads_ubm=32
-nnet3_affix=       # affix for exp dirs, e.g. it was _cleaned in tedlium.
+nnet3_affix=_tdnn_lstm_train       # affix for exp dirs, e.g. it was _cleaned in tedlium.
 
 # Options which are not passed through to run_ivector_common.sh
 affix=1a  #affix for TDNN+LSTM directory e.g. "1a" or "1b", in case we change the configuration.
@@ -81,9 +81,12 @@ remove_egs=true
 #decode options
 test_online_decoding=false  # if true, it will run the last decoding stage.
 
-. ./cmd.sh
+#. ./cmd.sh
 . ./path.sh
 . ./utils/parse_options.sh
+
+cmd="run.pl --max-jobs-run 2"
+nj=$(grep -c ^processor /proc/cpuinfo)
 
 if ! cuda-compiled; then
   cat <<EOF && exit 1
@@ -109,7 +112,7 @@ train_data_dir=data/${train_set}_sp_hires
 train_ivector_dir=exp/nnet3${nnet3_affix}/ivectors_${train_set}_sp_hires
 
 for f in $train_data_dir/feats.scp $train_ivector_dir/ivector_online.scp \
-    $gmm_dir/{graph_tgpr,graph_bd_tgpr}/HCLG.fst \
+    $gmm_dir/graph/HCLG.fst \
     $ali_dir/ali.1.gz $gmm_dir/final.mdl; do
   [ ! -f $f ] && echo "$0: expected file $f to exist" && exit 1
 done
@@ -155,7 +158,7 @@ if [ $stage -le 13 ]; then
   fi
 
   steps/nnet3/train_rnn.py --stage=$train_stage \
-    --cmd="$decode_cmd" \
+    --cmd="$cmd" \
     --feat.online-ivector-dir=$train_ivector_dir \
     --feat.cmvn-opts="--norm-means=false --norm-vars=false" \
     --trainer.srand=$srand \
@@ -177,7 +180,7 @@ if [ $stage -le 13 ]; then
     --egs.chunk-right-context-final=0 \
     --egs.dir="$common_egs_dir" \
     --cleanup.remove-egs=$remove_egs \
-    --use-gpu=true \
+    --use-gpu=wait \
     --feat-dir=$train_data_dir \
     --ali-dir=$ali_dir \
     --lang=$lang \
@@ -193,24 +196,20 @@ if [ $stage -le 14 ]; then
     (
       frames_per_chunk=$(echo $chunk_width | cut -d, -f1)
       data_affix=$(echo $data | sed s/test_//)
-      nj=$(wc -l <data/${data}_hires/spk2utt)
-      for lmtype in tgpr bd_tgpr; do
-        graph_dir=$gmm_dir/graph_${lmtype}
-        steps/nnet3/decode.sh \
-          --extra-left-context $chunk_left_context \
-          --extra-right-context $chunk_right_context \
-          --extra-left-context-initial 0 \
-          --extra-right-context-final 0 \
-          --frames-per-chunk $frames_per_chunk \
-          --nj $nj --cmd "$decode_cmd"  --num-threads 4 \
-          --online-ivector-dir exp/nnet3${nnet3_affix}/ivectors_${data}_hires \
-          $graph_dir data/${data}_hires ${dir}/decode_${lmtype}_${data_affix} || exit 1
-      done
-      steps/lmrescore.sh --cmd "$decode_cmd" data/lang_test_{tgpr,tg} \
-        data/${data}_hires ${dir}/decode_{tgpr,tg}_${data_affix} || exit 1
-      steps/lmrescore_const_arpa.sh --cmd "$decode_cmd" \
-        data/lang_test_bd_{tgpr,fgconst} \
-       data/${data}_hires ${dir}/decode_${lmtype}_${data_affix}{,_fg} || exit 1
+      #nj=$(wc -l <data/${data}_hires/spk2utt)
+      nj=12
+      
+      graph_dir=$gmm_dir/graph
+      
+      steps/nnet3/decode.sh \
+        --extra-left-context $chunk_left_context \
+        --extra-right-context $chunk_right_context \
+        --extra-left-context-initial 0 \
+        --extra-right-context-final 0 \
+        --frames-per-chunk $frames_per_chunk \
+        --nj $nj --cmd "$cmd"  --num-threads 4 \
+        --online-ivector-dir exp/nnet3${nnet3_affix}/ivectors_${data}_hires \
+        $graph_dir data/${data}_hires ${dir}/decode_${data_affix} || exit 1
     ) || touch $dir/.error &
   done
   wait
@@ -231,20 +230,16 @@ if [ $stage -le 15 ]; then
   for data in $test_sets; do
     (
       data_affix=$(echo $data | sed s/test_//)
-      nj=$(wc -l <data/${data}_hires/spk2utt)
-      for lmtype in tgpr bd_tgpr; do
-        graph_dir=$gmm_dir/graph_${lmtype}
-        steps/nnet3/decode_looped.sh \
-          --frames-per-chunk 30 \
-          --nj $nj --cmd "$decode_cmd" \
-          --online-ivector-dir exp/nnet3${nnet3_affix}/ivectors_${data}_hires \
-          $graph_dir data/${data}_hires ${dir}/decode_looped_${lmtype}_${data_affix} || exit 1
-      done
-      steps/lmrescore.sh --cmd "$decode_cmd" data/lang_test_{tgpr,tg} \
-        data/${data}_hires ${dir}/decode_looped_{tgpr,tg}_${data_affix} || exit 1
-      steps/lmrescore_const_arpa.sh --cmd "$decode_cmd" \
-        data/lang_test_bd_{tgpr,fgconst} \
-       data/${data}_hires ${dir}/decode_looped_${lmtype}_${data_affix}{,_fg} || exit 1
+      #nj=$(wc -l <data/${data}_hires/spk2utt)
+      nj=12
+      
+      graph_dir=$gmm_dir/graph
+      steps/nnet3/decode_looped.sh \
+        --frames-per-chunk 30 \
+        --nj $nj --cmd "$cmd" \
+        --online-ivector-dir exp/nnet3${nnet3_affix}/ivectors_${data}_hires \
+        $graph_dir data/${data}_hires ${dir}/decode_looped_${data_affix} || exit 1
+
     ) || touch $dir/.error &
   done
   wait
@@ -269,12 +264,12 @@ if $test_online_decoding && [ $stage -le 16 ]; then
       for lmtype in tgpr bd_tgpr; do
         graph_dir=$gmm_dir/graph_${lmtype}
         steps/online/nnet3/decode.sh \
-          --nj $nj --cmd "$decode_cmd" \
+          --nj $nj --cmd "$cmd" \
           $graph_dir data/${data} ${dir}_online/decode_${lmtype}_${data_affix} || exit 1
       done
-      steps/lmrescore.sh --cmd "$decode_cmd" data/lang_test_{tgpr,tg} \
+      steps/lmrescore.sh --cmd "$cmd" data/lang_test_{tgpr,tg} \
         data/${data}_hires ${dir}_online/decode_{tgpr,tg}_${data_affix} || exit 1
-      steps/lmrescore_const_arpa.sh --cmd "$decode_cmd" \
+      steps/lmrescore_const_arpa.sh --cmd "$cmd" \
         data/lang_test_bd_{tgpr,fgconst} \
        data/${data}_hires ${dir}_online/decode_${lmtype}_${data_affix}{,_fg} || exit 1
     ) || touch $dir/.error &

@@ -26,9 +26,9 @@ stage=0
 nj=30
 
 train_set="train"
-test_sets="dev test"
+test_sets="dev"
 
-gmm=tri6      # this is the source gmm-dir that we'll use for alignments; it
+gmm=tri8      # this is the source gmm-dir that we'll use for alignments; it
               # should have alignments for the specified training data.
 num_threads_ubm=32
 
