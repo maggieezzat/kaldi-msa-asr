@@ -14,16 +14,23 @@ def get_duration(fname):
         return duration
 
 
-def make_boxPlot(dir_path):
-    files = glob.glob(os.path.join(dir_path, "*.wav"))
+def make_boxPlot(file_path):
+    j = 0
     sizes = []
-    for file in files:
-        sizes.append(get_duration(file))
-        print(get_duration(file))
+    with open(file_path, 'r') as f:
+        for line in f:
+            n = float(line.strip())
+            if n<=20:
+                sizes.append(n)
+            else:
+                j += 1
+
+    print(j)
+
     plt.boxplot(np.array(sizes))
     plt.show()
 
 
 if __name__ == "__main__":
-    dir_path = sys.argv[1]
-    make_boxPlot(dir_path)
+    file_path = sys.argv[1]
+    make_boxPlot(file_path)

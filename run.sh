@@ -313,6 +313,6 @@ if [ $stage -le 13 ]; then
     else
       echo "Successfully set compute mode to Exclusive_Process"
     fi
-    CUDA_VISIBLE_DEVICES=0,1 local/nnet3/run_tdnn.sh
+    CUDA_VISIBLE_DEVICES=0,1 local/nnet3/run_tdnn_lstm.sh
 fi
 #####################################################################################################################
